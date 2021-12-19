@@ -98,7 +98,10 @@ def read_labels_from_files(directory,
           sorted_img_labels.append((cname, new_box))
           img_labels[cname].append(new_box)
           if add_conf:
+            if has_conf:
               img_labels[cname][-1].append(float(label[-1]))
+            else:
+              img_labels[cname][-1].append(1.0)
 
       # all_imgs_labels[idx]['labels'] = img_labels
       # all_imgs_labels_dict[imgname] = img_labels
@@ -163,3 +166,5 @@ def get_labels_as(all_imgs_labels,
       new_imgs_labels[img][id].append(new_box)
     img_id += 1
   return new_imgs_labels
+
+
