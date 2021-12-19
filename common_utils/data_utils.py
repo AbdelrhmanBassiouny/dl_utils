@@ -151,6 +151,8 @@ def get_labels_as(all_imgs_labels,
     for cls_name, box in zipped_annotations:
       if cname2cid is not None:
         id = cname2cid[cls_name]
+      else:
+        id = cls_name
       new_imgs_labels[img][id] = []
       new_box = []
       new_box.append(box[0] * width_ratio)
