@@ -12,46 +12,7 @@ from PIL import Image as PILImage
 from PIL import ImageDraw as PILImageDraw
 import collections
 from copy import copy, deepcopy
-
-
-xywh_to_xcycwh_xyxy = {'x1': lambda x: x[0], 'x2': lambda x: x[0] + x[2], 'y1': lambda x: x[1],
-                       'y2': lambda x: x[1] + x[3], 'w': lambda x: x[2], 'h': lambda x: x[3],
-                       'xc': lambda x: x[0] + x[2] / 2.0, 'yc': lambda x: x[1] + x[3] / 2.0}
-
-xcycwh_to_xywh_xyxy = {'x1': lambda x: x[0] - x[2] / 2.0, 'y1': lambda x: x[1] - x[3] / 2.0,
-                       'x2': lambda x: x[0] + x[2] / 2.0, 'y2': lambda x: x[1] + x[3] / 2.0,
-                       'w': lambda x: x[2], 'h': lambda x: x[3]}
-
-xyxy_to_xywh_xcycwh = {'x1': lambda x: x[0], 'w': lambda x: x[2] - x[0], 'y1': lambda x: x[1],
-                       'h': lambda x: x[3] - x[1], 'xc': lambda x: (x[0] + x[2]) / 2.0,
-                       'yc': lambda x: (x[1] + x[3]) / 2.0}
-
-yxyx_to_xywh = {'x1': lambda x: x[1], 'w': lambda x: x[3] - x[1], 'y1': lambda x: x[0],
-                'h': lambda x: x[2] - x[0], 'xc': lambda x: (x[1] + x[3]) / 2.0,
-                'yc': lambda x: (x[0] + x[2]) / 2.0}
-
-
-def convert_format(box, in_format=('x1', 'y1', 'w', 'h'), out_format=('x1', 'y1', 'x2', 'y2')):
-    if in_format == ('x1', 'y1', 'x2', 'y2') and \
-       (out_format == ('x1', 'y1', 'w', 'h') or
-            out_format == ('xc', 'yc', 'w', 'h')):
-      return [xyxy_to_xywh_xcycwh[element](box) for element in out_format]
-    elif in_format == ('xc', 'yc', 'w', 'h') and \
-        (out_format == ('x1', 'y1', 'w', 'h') or
-         out_format == ('x1', 'y1', 'x2', 'y2')):
-      return [xcycwh_to_xywh_xyxy[element](box) for element in out_format]
-    elif in_format == ('x1', 'y1', 'w', 'h') and \
-        (out_format == ('x1', 'y1', 'x2', 'y2') or
-         out_format == ('xc', 'yc', 'w', 'h')):
-      return [xywh_to_xcycwh_xyxy[element](box) for element in out_format]
-    elif in_format == ('y1', 'x1', 'y2', 'x2') and \
-            (out_format == ('x1', 'y1', 'w', 'h') or
-             out_format == ('xc', 'yc', 'w', 'h')):
-      return [yxyx_to_xywh[element](box) for element in out_format]
-    elif in_format == out_format:
-      return box
-    else:
-      raise ValueError("Wrong Conversion")
+from data_utils import convert_format
 
 
 # Load the dataset json
@@ -484,8 +445,6 @@ class CocoDataset():
 
 
 if __name__ == "__main__":
-
-    import collections
 
     annotation_path = '/home/abdelrhman/data/laptop_components/train2/laptop_components.json'
     image_dir = '/home/abdelrhman/data/laptop_components/train1'
