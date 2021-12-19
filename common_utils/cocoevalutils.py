@@ -1,4 +1,4 @@
-from datatococo import COCOJsonGenerator
+from common_utils.datatococo import COCOJsonGenerator
 from pycocotools.cocoeval import COCOeval
 
 
