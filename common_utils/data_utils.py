@@ -109,3 +109,54 @@ def read_labels_from_files(directory,
   all_imgs_labels = [{'id': id, 'labels': labels}
                      for id, labels in all_imgs_labels_dict.items()]
   return all_imgs_labels
+
+
+def get_labels_as(all_imgs_labels,
+                  in_format=('x1', 'y1', 'w', 'h'),
+                  out_format=('x1', 'y1', 'w', 'h'),
+                  is_rel=False, relative=False,
+                  dtype='float',
+                  width=1.0, height=1.0,
+                  cname2cid=None,
+                  imgids=False):
+  new_imgs_labels = {}
+  img_id = 0
+  for img_name, annotations in all_imgs_labels.items():
+    img = img_name
+    if imgids:
+      img = img_id
+    new_imgs_labels[img] = {}
+    width_ratio, height_ratio = 1.0, 1.0
+    if relative and not is_rel:
+        width_ratio /= width
+        height_ratio /= height
+    elif not relative and is_rel:
+        width_ratio *= width
+        height_ratio *= height
+    
+    if type(annotations) == dict:
+      zipped_annotations = []
+      for cls_name, cls_boxes in annotations.items():
+        for box in cls_boxes:
+          zipped_annotations.append((cls_name, box))
+    else:
+      zipped_annotations = annotations
+            
+    for cls_name, box in zipped_annotations:
+      if cname2cid is not None:
+        id = cname2cid[cls_name]
+      new_imgs_labels[img][id] = []
+      new_box = []
+      new_box.append(box[0] * width_ratio)
+      new_box.append(box[1] * height_ratio)
+      new_box.append(box[2] * width_ratio)
+      new_box.append(box[3] * height_ratio)
+      if len(box) > 4:
+        new_box.append(box[4])
+      new_box[0:4] = convert_format(new_box[0:4], in_format=in_format,
+                                    out_format=out_format)
+      if dtype == 'int':
+        new_box[0:4] = list(map(int, new_box[0:4]))
+      new_imgs_labels[img][id].append(new_box)
+    img_id += 1
+  return new_imgs_labels
