@@ -116,23 +116,26 @@ def get_labels_as(all_imgs_labels,
                   out_format=('x1', 'y1', 'w', 'h'),
                   is_rel=False, relative=False,
                   dtype='float',
-                  width=1.0, height=1.0,
+                  width=None, height=None,
                   cname2cid=None,
                   imgids=False):
+  
+  if (width is None) or (height is None):
+      width, height = [1.0]*len(all_imgs_labels), [1.0]*len(all_imgs_labels)
   new_imgs_labels = {}
   img_id = 0
-  for img_name, annotations in all_imgs_labels.items():
+  for i, (img_name, annotations) in enumerate(all_imgs_labels.items()):
     img = img_name
     if imgids:
       img = img_id
     new_imgs_labels[img] = {}
     width_ratio, height_ratio = 1.0, 1.0
     if relative and not is_rel:
-        width_ratio /= width
-        height_ratio /= height
+        width_ratio /= width[i]
+        height_ratio /= height[i]
     elif not relative and is_rel:
-        width_ratio *= width
-        height_ratio *= height
+        width_ratio *= width[i]
+        height_ratio *= height[i]
     
     if type(annotations) == dict:
       zipped_annotations = []
